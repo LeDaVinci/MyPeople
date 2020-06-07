@@ -1,43 +1,51 @@
 package com.wanghang.mypeople
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 
-class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+open class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        /*MyLiveData.instance.observe(this, this, Observer {
+            println("$it $localClassName")
+            textView2.text = it
+        })*/
     }
 
     override fun onResume() {
         super.onResume()
-
         val peopleDao = PeopleRoomDatabase.getDatabase(context = this, scope = this).peopleDao()
         launch {
-            var people:People?
-            withContext(Dispatchers.IO) {
-                people = peopleDao.getPeople("wanghang")
-                println(people)
-                textView2.text = people!!.name
-                delay(5000)
-            }
-            println(Thread.currentThread().name)
+            peopleDao.getPeoples().observe(this@MainActivity, Observer {
+                it.forEach { _ ->
+                    println(it)
+                }
+            })
 
-            launch (Dispatchers.IO){
-                println(Thread.currentThread().name)
-                peopleDao.insertPeople(People("gaoguan", 24, "湖北黄冈"))
-                println("insert gaoguan")
+            launch(Dispatchers.IO) {
+                repeat(10) {
+                    peopleDao.insertPeople(People("gaoguan$it", 24, "湖北黄冈"))
+                    delay(5000)
+                }
             }
-
-            println("in")
         }
 
+        MyLiveData.instance.observe(this, this, observer1)
 
-        println("xxxxx")
-        println(Thread.currentThread().name)
-        textView.text = "xxx"
+        textView3.setOnClickListener {
+            startActivity(Intent(this, SecondActivity::class.java))
+        }
+    }
+
+    private val observer1 = Observer<String> {
+        println("$it $localClassName")
+        textView2.text = it
     }
 }

@@ -1,5 +1,6 @@
 package com.wanghang.mypeople
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -24,5 +25,11 @@ interface PeopleDao {
     fun insertPeople(people: People)
 
     @Query("SELECT * FROM people WHERE name= :name LIMIT 1")
-    fun getPeople(name: String):People
+    fun getPeople(name: String): People
+
+    @Query("SELECT age FROM people WHERE name= :name LIMIT 1")
+    fun getPeopleAge(name: String): Int
+
+    @Query("SELECT * FROM people")
+    fun getPeoples(): LiveData<List<People>>
 }

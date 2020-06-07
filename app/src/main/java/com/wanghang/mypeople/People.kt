@@ -18,5 +18,7 @@ import androidx.room.PrimaryKey
  * *   wanghang       2020/6/6         1.0      build this module
  ****************************************************************/
 @Entity(tableName = "people")
-data class People(@PrimaryKey @ColumnInfo(name = "name") val name : String,
-                  @ColumnInfo(name = "age",defaultValue = "18") val age : Int, @ColumnInfo val address: String?)
+data class People(
+    @PrimaryKey @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "age", defaultValue = "18") val age: Int, @ColumnInfo val address: String?
+)
